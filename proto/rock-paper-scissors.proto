@@ -25,6 +25,22 @@ service RockPaperScissorsService {
       get: "/v1/results"
     };
   }
+  // 通知
+  rpc NotifyMessages (NotifyRequest) returns (stream NotifyResponse) {
+    option (google.api.http) = {
+      post: "/v1/messages/notify"
+      body: "*"
+    };
+  }
+  // 数字を複数アップロードし、合計値を返す
+  rpc SumValues (stream SumRequest) returns (SumResponse) {
+    option (google.api.http) = {
+      get: "/v1/sum/values"
+      body: "*"
+    };
+  }
+  // チャット
+  rpc ChatMessages (stream ChatRequest) returns (stream ChatResponse) {}
 }
 
 // enumでぐー、ちょき、ぱーの定義
@@ -74,4 +90,28 @@ message ReportRequest {}
 // ReportMatchResultsメソッドのレスポンス用のメッセージ型
 message ReportResponse {
   Report report = 1;
+}
+
+message NotifyRequest {
+  int32 num = 1;
+}
+
+message NotifyResponse {
+  string message = 1;
+}
+
+message SumRequest {
+  int32 value = 1;
+}
+
+message SumResponse {
+  string message = 1;
+}
+
+message ChatRequest {
+  string message = 1;
+}
+
+message ChatResponse {
+  string message = 1;
 }

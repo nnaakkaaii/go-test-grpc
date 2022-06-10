@@ -18,7 +18,8 @@ gRPC stubの生成
 $ protoc -I/usr/local/include -I. \
   -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
   -I/usr/local/opt/protobuf/include \
-  --go_out=. \             
+  --go_out=. \
+  --go-grpc_out=require_unimplemented_servers=false:. \
   ./proto/rock-paper-scissors.proto
 ```
 
@@ -71,6 +72,22 @@ report {
   }
 }
 Rpc succeeded with OK status
+$ grpc_cli call localhost:50051 game.RockPaperScissorsService.NotifyMessages 'num: 5'
+connecting to localhost:50051
+message: "0"
+message: "1"
+message: "2"
+message: "3"
+message: "4"
+Rpc succeeded with OK status
+$ grpc_cli call localhost:50051 game.RockPaperScissorsService.SumValues
+reading streaming request message from stdin...
+value: 10
+
+Request sent.
+value: 11
+
+Request sent.
 ```
 
 Rest APIの確認

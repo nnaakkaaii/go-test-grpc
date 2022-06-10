@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"io"
 	"math/rand"
 	"net"
 	"test-grpc/pb"
@@ -94,4 +95,48 @@ func (s *RockPaperScissorsService) ReportMatchResults(ctx context.Context, req *
 		NumberOfWins:  s.numberOfWins,
 		MatchResults:  s.matchResults,
 	}}, nil
+}
+
+func (s *RockPaperScissorsService) NotifyMessages(req *pb.NotifyRequest, stream pb.RockPaperScissorsService_NotifyMessagesServer) error {
+	for i := int32(0); i < req.GetNum(); i++ {
+		message := fmt.Sprintf("%d", i)
+		if err := stream.Send(&pb.NotifyResponse{Message: message}); err != nil {
+			return err
+		}
+		time.Sleep(1 * time.Second)
+	}
+	return nil
+}
+
+func (s *RockPaperScissorsService) SumValues(stream pb.RockPaperScissorsService_SumValuesServer) error {
+	var sum int32
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			message := fmt.Sprintf("DONE: sum = %d", sum)
+			return stream.SendAndClose(&pb.SumResponse{Message: message})
+		}
+		if err != nil {
+			return err
+		}
+		sum += req.GetValue()
+	}
+}
+
+func (s *RockPaperScissorsService) ChatMessages(stream pb.RockPaperScissorsService_ChatMessagesServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		message := in.GetMessage()
+		reply := fmt.Sprintf("%sを受け取りました", message)
+		if err := stream.Send(&pb.ChatResponse{Message: reply}); err != nil {
+			return err
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
