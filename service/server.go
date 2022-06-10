@@ -2,10 +2,15 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"math/rand"
+	"net"
 	"test-grpc/pb"
 	"test-grpc/pkg"
 	"time"
@@ -13,6 +18,23 @@ import (
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
+}
+
+func StartServer(serverPort int) error {
+	listenPort, err := net.Listen("tcp", fmt.Sprintf(":%d", serverPort))
+	if err != nil {
+		return errors.New(fmt.Sprintf("failed to listen: %v", err))
+	}
+
+	// gRPCサーバーの生成
+	server := grpc.NewServer()
+	// 自動生成された関数に、サーバーと実際に処理を行うメソッドを実装したハンドラを設定
+	pb.RegisterRockPaperScissorsServiceServer(server, newRockPaperScissorsService())
+
+	// サーバーリフレクションを有効にすることで、シリアライズせずにgrpc_cli上での動作確認ができる
+	reflection.Register(server)
+	// サーバーを起動
+	return server.Serve(listenPort)
 }
 
 var _ pb.RockPaperScissorsServiceServer = (*RockPaperScissorsService)(nil)
@@ -25,7 +47,7 @@ type RockPaperScissorsService struct {
 }
 
 // NewRockPaperScissorsService は、RockPaperScissorsServicesを生成するコンストラクタ
-func NewRockPaperScissorsService() *RockPaperScissorsService {
+func newRockPaperScissorsService() *RockPaperScissorsService {
 	return &RockPaperScissorsService{
 		numberOfGames: 0,
 		numberOfWins:  0,

@@ -2,13 +2,41 @@
 
 ## usage
 
-### コードの自動生成
+### コードの自動生成 (gRPC-Gatewayなし)
 
 ```bash
-$ protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. ./proto/rock-paper-scissors.proto
+$ protoc --go_out=. \
+  --go-grpc_out=require_unimplemented_servers=false:. \
+  ./proto/rock-paper-scissors.proto
 ```
 
+### コードの自動生成 (gRPC-Gatewayあり)
+
+gRPC stubの生成
+
+```bash
+$ protoc -I/usr/local/include -I. \
+  -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+  -I/usr/local/opt/protobuf/include \
+  --go_out=. \             
+  ./proto/rock-paper-scissors.proto
+```
+
+gRPC Gatewayの生成
+
+```bash
+$ protoc -I/usr/local/include -I. \
+  -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+  -I/usr/local/opt/protobuf/include \
+  --grpc-gateway_out=logtostderr=true:. \
+  ./proto/rock-paper-scissors.proto
+```
+
+※ protoc-gen-grpc-gateway がnot foundになる場合、pkg下のprotoc-gen-grpc-gatewayに入ったあと、 `go install` を実行
+
 ### cliでの動作確認
+
+gRPCの動作確認
 
 ```bash
 $ go run ./cmd/api &
@@ -43,6 +71,15 @@ report {
   }
 }
 Rpc succeeded with OK status
+```
+
+Rest APIの確認
+
+```bash
+$ curl -XGET "localhost:50052/v1/results"
+...
+$ curl -XPOST -d '{"handShapes": 1}' "localhost:50052/v1/game/play"
+...
 ```
 
 ### clientからの確認

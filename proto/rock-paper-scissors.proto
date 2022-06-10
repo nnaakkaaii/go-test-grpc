@@ -8,13 +8,23 @@ option go_package = "pb/;pb";
 
 // 他のパッケージのメッセージ型のimport
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 // APIにおけるサービスの定義
 service RockPaperScissorsService {
   // ジャンケンの実施
-  rpc PlayGame (PlayRequest) returns (PlayResponse) {}
+  rpc PlayGame (PlayRequest) returns (PlayResponse) {
+    option (google.api.http) = {
+      post: "/v1/game/play"
+      body: "*"
+    };
+  }
   // 結果の確認
-  rpc ReportMatchResults (ReportRequest) returns (ReportResponse) {}
+  rpc ReportMatchResults (ReportRequest) returns (ReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/results"
+    };
+  }
 }
 
 // enumでぐー、ちょき、ぱーの定義
