@@ -33,6 +33,16 @@ $ protoc -I/usr/local/include -I. \
   ./proto/rock-paper-scissors.proto
 ```
 
+OpenAPI Schemaの生成
+
+```bash
+$ protoc -I/usr/local/include -I. \
+  -I$GOPATH/pkg/mod/github.com/grpc-ecosystem/grpc-gateway@v1.16.0/third_party/googleapis \
+  -I/usr/local/opt/protobuf/include \
+  --swagger_out=allow_merge=true,merge_file_name=./spec:. \
+  ./proto/rock-paper-scissors.proto
+```
+
 ※ protoc-gen-grpc-gateway がnot foundになる場合、pkg下のprotoc-gen-grpc-gatewayに入ったあと、 `go install` を実行
 
 ### cliでの動作確認
@@ -97,6 +107,7 @@ $ curl -XGET "localhost:50052/v1/results"
 ...
 $ curl -XPOST -d '{"handShapes": 1}' "localhost:50052/v1/game/play"
 ...
+$ curl -XGET "localhost:50052/v1/messages/notify?num=5"
 ```
 
 ### clientからの確認

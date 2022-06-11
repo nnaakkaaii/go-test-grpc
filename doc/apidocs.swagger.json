@@ -1,0 +1,327 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "パッケージ名",
+    "version": "version not set"
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/game/play": {
+      "post": {
+        "summary": "ジャンケンの実施",
+        "operationId": "RockPaperScissorsService_PlayGame",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gamePlayResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/gamePlayRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RockPaperScissorsService"
+        ]
+      }
+    },
+    "/v1/messages/notify": {
+      "get": {
+        "summary": "通知",
+        "operationId": "RockPaperScissorsService_NotifyMessages",
+        "responses": {
+          "200": {
+            "description": "A successful response.(streaming responses)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "$ref": "#/definitions/gameNotifyResponse"
+                },
+                "error": {
+                  "$ref": "#/definitions/runtimeStreamError"
+                }
+              },
+              "title": "Stream result of gameNotifyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "num",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "RockPaperScissorsService"
+        ]
+      }
+    },
+    "/v1/results": {
+      "get": {
+        "summary": "結果の確認",
+        "operationId": "RockPaperScissorsService_ReportMatchResults",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gameReportResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "tags": [
+          "RockPaperScissorsService"
+        ]
+      }
+    },
+    "/v1/sum/values": {
+      "post": {
+        "summary": "数字を複数アップロードし、合計値を返す",
+        "operationId": "RockPaperScissorsService_SumValues",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gameSumResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " (streaming inputs)",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/gameSumRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RockPaperScissorsService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "gameChatResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "gameHandShapes": {
+      "type": "string",
+      "enum": [
+        "HAND_SHAPES_UNKNOWN",
+        "ROCK",
+        "PAPER",
+        "SCISSORS"
+      ],
+      "default": "HAND_SHAPES_UNKNOWN",
+      "title": "enumでぐー、ちょき、ぱーの定義"
+    },
+    "gameMatchResult": {
+      "type": "object",
+      "properties": {
+        "yourHandShapes": {
+          "$ref": "#/definitions/gameHandShapes"
+        },
+        "opponentHandShapes": {
+          "$ref": "#/definitions/gameHandShapes"
+        },
+        "result": {
+          "$ref": "#/definitions/gameResult"
+        },
+        "create_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "対戦結果のメッセージ型"
+    },
+    "gameNotifyResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "gamePlayRequest": {
+      "type": "object",
+      "properties": {
+        "handShapes": {
+          "$ref": "#/definitions/gameHandShapes"
+        }
+      },
+      "title": "PlayGameメソッドのリクエスト用のメッセージ型"
+    },
+    "gamePlayResponse": {
+      "type": "object",
+      "properties": {
+        "matchResult": {
+          "$ref": "#/definitions/gameMatchResult"
+        }
+      },
+      "title": "PlayGameメソッドのレスポンス用のメッセージ型"
+    },
+    "gameReport": {
+      "type": "object",
+      "properties": {
+        "numberOfGames": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "numberOfWins": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "matchResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/gameMatchResult"
+          }
+        }
+      },
+      "title": "今までの試合数、勝敗と対戦結果の履歴を持つメッセージ型"
+    },
+    "gameReportResponse": {
+      "type": "object",
+      "properties": {
+        "report": {
+          "$ref": "#/definitions/gameReport"
+        }
+      },
+      "title": "ReportMatchResultsメソッドのレスポンス用のメッセージ型"
+    },
+    "gameResult": {
+      "type": "string",
+      "enum": [
+        "RESULT_UNKNOWN",
+        "WIN",
+        "LOSE",
+        "DRAW"
+      ],
+      "default": "RESULT_UNKNOWN",
+      "title": "enumで勝敗とあいこを定義"
+    },
+    "gameSumRequest": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "gameSumResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "type_url": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "runtimeError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "runtimeStreamError": {
+      "type": "object",
+      "properties": {
+        "grpc_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "http_code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "http_status": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

@@ -28,14 +28,13 @@ service RockPaperScissorsService {
   // 通知
   rpc NotifyMessages (NotifyRequest) returns (stream NotifyResponse) {
     option (google.api.http) = {
-      post: "/v1/messages/notify"
-      body: "*"
+      get: "/v1/messages/notify"
     };
   }
   // 数字を複数アップロードし、合計値を返す
   rpc SumValues (stream SumRequest) returns (SumResponse) {
     option (google.api.http) = {
-      get: "/v1/sum/values"
+      post: "/v1/values/sum"
       body: "*"
     };
   }
