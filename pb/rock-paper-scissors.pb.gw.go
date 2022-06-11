@@ -354,7 +354,7 @@ var (
 
 	pattern_RockPaperScissorsService_NotifyMessages_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "messages", "notify"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_RockPaperScissorsService_SumValues_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "sum", "values"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_RockPaperScissorsService_SumValues_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "values", "sum"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

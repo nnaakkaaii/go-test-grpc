@@ -108,7 +108,7 @@
         ]
       }
     },
-    "/v1/sum/values": {
+    "/v1/values/sum": {
       "post": {
         "summary": "数字を複数アップロードし、合計値を返す",
         "operationId": "RockPaperScissorsService_SumValues",
